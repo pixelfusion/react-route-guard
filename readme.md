@@ -2,7 +2,7 @@
 
 ## 1. `EhancedRoute`
 
-`<EnhancedRoute>` is based on the `<Route`>, mean basically you can use it as a normal `<Route`>, but added the `RouteGuard` support when doing routing, here is how it works underlying:
+`<EnhancedRoute>` is based on the `<Route`>, means that basically, you can use it as a normal `<Route`>, but added the `RouteGuard` support when doing routing, here is how it works underlying:
 ```javascript
  ------------------------------------------------------------------------
  |    `<EnhancedRoute>` be created (no any route dom at this moment)    |

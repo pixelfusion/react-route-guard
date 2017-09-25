@@ -7,7 +7,8 @@
   "author": "Wison <wison@pixelfusion.co.nz>",
   "license": "MIT",
   "scripts": {
-    "build": "rm -rf src/route-guard.js && ./node_modules/.bin/tsc --outFile src/route-guard.js && mv src/route-guard.js ./index.js"
+    "build": "rm -rf src/route-guard.js && ./node_modules/.bin/tsc --outFile src/route-guard.js && mv src/route-guard.js ./index.js",
+    "build-declarationf-file": "rm -rf src/enhanced-route.d.ts && ./node_modules/.bin/tsc -d && mv src/enhanced-route.d.ts ./index.d.ts"
   },
   "devDependencies": {
     "@types/react": "^16.0.5",

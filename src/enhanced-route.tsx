@@ -45,7 +45,7 @@ export interface EnhancedRouteProps extends RouteProps {
     enableDebug?: boolean
 }
 
-interface EnhancedRouteState {
+export interface EnhancedRouteState {
     hasRouteGuard: boolean
     routeGuardFinished: boolean
     routeGuardResult: JSX.Element

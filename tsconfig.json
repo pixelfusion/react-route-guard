@@ -10,7 +10,6 @@
             "es6",
             "dom"
         ],
-        "allowJs": true,
         "noImplicitReturns": true,
         "noImplicitThis": true,
         "noImplicitAny": false,
