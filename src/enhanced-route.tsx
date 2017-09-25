@@ -2,6 +2,9 @@ import * as React from 'react';
 import { Route, RouteProps, Redirect } from 'react-router-dom'
 import { Observable } from 'rxjs'
 
+/**
+ * Debug logging theme
+ */
 const EnhancedRouteLoggerConsoleTheme = {
     normal: '',
     testing: 'color: darkcyan; font-size: 0.7rem; font-style: italic;',
@@ -9,6 +12,9 @@ const EnhancedRouteLoggerConsoleTheme = {
     error: 'color: red; font-size: 0.7rem; font-style: normal; font-weight: bold'
 };
 
+/**
+ * Debug loggin
+ */
 const debugLogger = (className: string, methodName: string, msg: string, displayFormat?: string, extraData?: any) => {
 
     const messageToPrint = displayFormat ? `%c[${className} - ${methodName}] ${msg}` : `[${className} - ${methodName}] ${msg}`;
@@ -39,12 +45,21 @@ export interface RouteGuard {
 }
 
 
+/**
+ * @export
+ * @interface EnhancedRouteProps
+ * @extends {RouteProps}
+ */
 export interface EnhancedRouteProps extends RouteProps {
     routeGuard?: RouteGuard
     redirectToPathWhenFail?: string
     enableDebug?: boolean
 }
 
+/**
+ * @export
+ * @interface EnhancedRouteState
+ */
 export interface EnhancedRouteState {
     hasRouteGuard: boolean
     routeGuardFinished: boolean
@@ -95,13 +110,15 @@ export class EnhancedRoute extends React.Component<EnhancedRouteProps, EnhancedR
                 }))
             })
         } else if (tempRouteGuardResult instanceof Observable) {
-            tempRouteGuardResult.take(1).subscribe(result => {
-                this.setState((prevState: EnhancedRouteState, props) => ({
-                    hasRouteGuard: prevState.hasRouteGuard,
-                    routeGuardFinished: true,
-                    routeGuardResult: result
-                }))
-            })
+            tempRouteGuardResult
+                .take(1)
+                .subscribe(result => {
+                    this.setState((prevState: EnhancedRouteState, props) => ({
+                        hasRouteGuard: prevState.hasRouteGuard,
+                        routeGuardFinished: true,
+                        routeGuardResult: result
+                    }))
+                })
         }
     }
 
