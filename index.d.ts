@@ -5,18 +5,18 @@ export declare type RouteGuardResultType = boolean | Promise<boolean> | Observab
 export interface RouteGuard {
     shouldRoute: () => RouteGuardResultType;
 }
-export interface EnhancedRouteProps extends RouteProps {
+export interface SecureRouteProps extends RouteProps {
     routeGuard?: RouteGuard;
     redirectToPathWhenFail?: string;
     enableDebug?: boolean;
 }
-export interface EnhancedRouteState {
+export interface SecureRouteState {
     hasRouteGuard: boolean;
     routeGuardFinished: boolean;
     routeGuardResult: JSX.Element;
 }
-export declare class EnhancedRoute extends React.Component<EnhancedRouteProps, EnhancedRouteState> {
-    constructor(props: EnhancedRouteProps);
+export declare class SecureRoute extends React.Component<SecureRouteProps, SecureRouteState> {
+    constructor(props: SecureRouteProps);
     componentDidMount(): Promise<void>;
     render(): JSX.Element;
 }
