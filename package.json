@@ -1,6 +1,6 @@
 {
   "name": "react-route-guard",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Add powerful Route Guard functionality to `react-router-dom`",
   "main": "index.js",
   "repository": "https://github.com/pixelfusion/react-route-guard.git",
