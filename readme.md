@@ -1,8 +1,8 @@
 # React Route Guard
 
-It's based on `react-router-dom`, added the route guard functionality on top of it, make it more easy to control permissions and roles on a route.
+It's based on `react-router-dom`, added the route guard functionality on top of it. It makes it easier to control permissions and roles on a route.
 
-## 1. Install
+## Install
 
 ```javascript
 yarn add react-route-guard
@@ -14,7 +14,7 @@ You don't need to install `@types/react-route-guard`, as it's written by `TypeSc
 
 </br>
 
-## 2. Concept
+## Concept
 
 - **`SecureRoute`**
 
@@ -126,7 +126,7 @@ You don't need to install `@types/react-route-guard`, as it's written by `TypeSc
 
     ```
     
-    - Async Real life example
+    - Async real life example
     ```javascript
     shouldRoute(): RouteGuardResultType {
         appStore.dispatch(routingActions.executeRouteGuard())
