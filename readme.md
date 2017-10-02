@@ -1,6 +1,6 @@
 # React Route Guard
 
-It's based on `react-router-dom`, added the route guard functionality on top of it. It makes it easier to control permissions and roles on a route.
+Based on `react-router-dom` with route guard functionality on top of it. It makes it easier to control permissions and roles on a route.
 
 ## Requirements
 
