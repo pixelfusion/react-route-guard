@@ -141,12 +141,12 @@ shouldRoute(): RouteGuardResultType {
         // then the check has passed. From here we rebuild the entire
         // app state for the routed component if needed
         
-        return Service.loadUserStateFromCookie()
-            .switchMap(loadedUser => loadedUser ? YYYY-Service.loadUserList() : Observable.of(false))
+        return UserService.loadUserStateFromCookie()
+            .switchMap(loadedUser => loadedUser ? UserService.loadUserList() : Observable.of(false))
             .do(userList => {
                 // Dispatch an action to let Reducer rebuild the state synchronize
                 if (userList && typeof(userList) === 'object') {
-                    appStore.dispatch(zzzz-actions.rebuildState(userList))) 
+                    appStore.dispatch(actions.rebuildState(userList))) 
                 }
             }
             // Map to boolean result
