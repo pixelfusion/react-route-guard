@@ -1,35 +1,32 @@
 # React Route Guard
 
-It's based on `react-router-dom`, added the route guard functionality on top of it, make it more easy to control the security layer on routing.
+Based on `react-router-dom` with route guard functionality on top of it. It makes it easier to control permissions and roles on a route.
 
-## 1. Install
+## Requirements
 
+- Node <=7.1
+
+
+## Install
 ```javascript
 yarn add react-route-guard
 ```
-You don't need to install `@types/react-route-guard`, as it's written by `TypeScript`, npm module already has `index.d.ts` there.
-</br>
+You don't need to install `@types/react-route-guard`, as it's written in TypeScript and the npm module already has `index.d.ts` there.
 
----
 
-</br>
-
-## 2. Concepts quick walkthrough
-
+## Concept
 - **`SecureRoute`**
 
-    `<SecureRoute>` works like same with `<Route`>, it means that, basically, you can use it as a normal `<Route`>, but you can use extra props to enable the `RouteGuard` feature when doing routing, Several things will happen after enable `RouteGuard`:
+    `<SecureRoute>` works like same way as `<Route`> and therefore you can use it in the exact same way. To enable the `RouteGuard` features pass in extra props (see below). SecureRoute will then perform the following tasks:
 
-    - There is NO any component DOM will be created after `<SecureRoute>` be created
+    - No DOM component will be created before `<SecureRoute>` has finished its check
 
-    - Inside `SecureRoute.componentDidMount()`, it will run `RouteGuard.shouldRoute()`, and will wait for it finish, after that, `SecureRoute` update the state. `RouteGuard.shouldRoute()` can be return a Sync `boolean` or Async of `Promise<boolean>` or `Observable<boolean>` .
+    - When the `<SecureRoute>` component has mounted, it will run `RouteGuard.shouldRoute()`. When this function is complete, `SecureRoute` will update the state. `RouteGuard.shouldRoute()` can synchronously return a `boolean` or asynchronously return a `Promise<boolean>` or `Observable<boolean>`
 
-    - Inside `SecureRoute.render()`, only will render the real route component when route guard IS FINISHED, and will render `<Redirect to={this.props.redirectToPathWhenFail | '/'} />` if route guard fail to pass.
+    - `SecureRoute.render()` will only render the route component when route guard has finished, and will render `<Redirect to={this.props.redirectToPathWhenFail | '/'} />` if the route guard check fails
 
 
-    here is the example how to use it:
-
-    ```xml
+```javascript
     <Router>
     <Switch>
         <SecureRoute path='/about' component={AboutComponent} />
@@ -39,122 +36,122 @@ You don't need to install `@types/react-route-guard`, as it's written by `TypeSc
         <Route />
     </Switch>
     </Router>
-    ```
-
- </br></br>
-
- ---
-</br></br>
-
+```
 
 
  - **`RouteGuard`**
 
-    `RouteGuard` is responsible for telling `<SecureRoute>` that can be routed to or not, `shouldRoute()` is the key to making that happen, this method MUST return a boolean value in sync mode or return a `Promise<boolean>` or `Observable<boolean>` in async mode, before the `RouteGuard` finished, HAS NO ANY component will be rendered, means no real routing will be executed, `RouteGuard` is the security guard for the resource to be protected.
+    `RouteGuard` is responsible for telling `<SecureRoute>` whether to enter that route or not. `shouldRoute()` is the key to making that happen, this method must return a boolean value in sync mode or return a `Promise<boolean>` or `Observable<boolean>` in async mode. Before the `RouteGuard` finished, no child components will be rendered, which means no real routing will be executed. `RouteGuard` will stop unauthorized users seeing a route altogether.
  
-    ```javascript
-    export type RouteGuardResultType = boolean | Promise<boolean> | Observable<boolean>
+```javascript
+export type RouteGuardResultType = boolean | Promise<boolean> | Observable<boolean>
 
-    /**
-    * @export
-    * @interface RouteGuard
-    */
-    export interface RouteGuard {
-        shouldRoute: () => RouteGuardResultType
-    }
-    ```
+/**
+* @export
+* @interface RouteGuard
+*/
+export interface RouteGuard {
+    shouldRoute: () => RouteGuardResultType
+}
+```
 
-    Hers are some `shouldRoute()` example for different situation:
+
+## Usage
+
+Here are some `shouldRoute()` example for different situation:
     
-    ```javascript
-    // ------------------------------ `shouldRoute` Sync example --------------------------
-    shouldRoute(): RouteGuardResultType {
-        // Sync API call here, and the final return value must be `map` to `boolean` if not
-        const resultFromSyncApiCall = true;
-        return resultFromSyncApiCall
-    }
-    ```
-
-    ```javascript
-    ------------------------------ `shouldRoute` Async Promise example --------------------------
-    async shouldRoute(): RouteGuardResultType {
-        //
-        // You can call any Promise here, even do complex call by using `promise.all()`, for getting
-        // the final boolean result to tell route should pass or not, e.g.
-        //
-        // const results = await Promise.all([
-        //     loginUserPromise,
-        //     getUserPermissionPromise,
-        //     getUserDashboardPromise
-        // ])
-        // 
-        // return results[0].user ? true : false
-        //
-        return new Promise((resolve, reject) => {
-            // Simulate call backend API for checking the authentication and even authorization
-            setTimeout(() => {
-                resolve(true)
-            }, 3000)
-        });
-    }
-    ```
+- Sync example
+```javascript
+shouldRoute(): RouteGuardResultType {
+    // Sync API call here, and the final return value must be `map` to `boolean` if not
+    const resultFromSyncApiCall = true;
+    return resultFromSyncApiCall
+}
+```
     
-    ```javascript
-    ------------------------------ `shouldRoute` Async Observable example --------------------------
-    shouldRoute(): RouteGuardResultType {
-        // If use Redux, we can dispatch an action to tell UI that `RouteGuard` is running, show the
-        // loading spin there (before I done).
-        appStore.dispatch(routingActions.executeRouteGuard())
+- Async Promise example
+```javascript
+async shouldRoute(): RouteGuardResultType {
+    // You can use a `Promise` to get
+    // the final boolean result 
+    return new Promise((resolve, reject) => {
+        // Simulate call backend API for checking the authentication and even authorization
+        setTimeout(() => {
+            resolve(true)
+        }, 3000)
+    });
+}
+```
     
-        // Simualte to call Backend APIs to grap the user and permissions
-        return Observable.timer(1000)
-            .map(n => {
-                // When API call done, we need to `map` to `boolean` if not
-                return true
-            })
-            .take(1)
-            // If use Redux, then dispatch an action to tell UI that `RouteGuard` is done, can hide 
-            // the loading spin right now.
-            .do(() => appStore.dispatch(routingActions.executeRouteGuardDone()))
-        }
+- Async Promise example with multiple promises
+```javascript
+async shouldRoute(): RouteGuardResultType {
+    // You can use `Promise.all()` for getting
+    // the final boolean result to based on multiple requirements 
 
-    ```
+    const results = await Promise.all([
+        loginUserPromise,
+        getUserPermissionPromise,
+        getUserDashboardPromise
+    ])
 
-    ```javascript
-    ------------------------------ `shouldRoute` Async Real life example -------------------------- 
-    shouldRoute(): RouteGuardResultType {
-        // Tell UI that `RouteGuard` is running, show the loading spin there (before I done).
-        appStore.dispatch(routingActions.executeRouteGuard())
-        
-        // Get the entire state for checking user already login or not
-        const appState: AppState = appStore.getState() as AppState;
+    return results[0].user ? true : false
+}
+```
+    
+- Async Observable example
+```javascript
+shouldRoute(): RouteGuardResultType {
+    // If use Redux, we can dispatch an action to tell UI that `RouteGuard` is running.
+    // This is useful for displaying loading indicators before the `shouldRoute` is complete
+    appStore.dispatch(routingActions.executeRouteGuard())
 
-        // Already login, pass directly
-        if (appState.auth.loginUser && (!appState.auth.loginError || appState.auth.loginError === '')) {
-            //
-            // At here, we can call any BackEnd APIs to rebuild the entire App State which need for the 
-            // routed component to be rendered correctly !!!
-            //
-            // Passed !
+    // Simulate a call to an API to grab the user and permissions
+    return Observable.timer(1000)
+        .map(n => {
+            // When API call done, we need to `map` to `boolean` if not
             return true
-        } else {
-            //
-            // At here, maybe user just `copy & paste` URL to new tab directly, then we can TRY TO load some 
-            // cookie or call some API to load user info, if load success, then `Passed` (and rebuild the entire
-            // App State which need for the routed component if needed); otherwise, `Fail` !!!
-            //
-            // retrun XXXX-Servie.loadUserStateFromCookie()
-            //     .switchMap(loadedUser => loadedUser ? YYYY-Service.loadUserList() : Observable.of(false))
-            //     .do(userList => {
-            //         // Dispatch an action to let Reducer rebuild the state synchronize
-            //         if (userList && typeof(userList) === 'object') {
-            //             appStore.dispatch(zzzz-actions.rebuildState(userList))) 
-            //         }
-            //     }
-            //     // Map to boolean result
-            //     .map(userList => userList ? true : false)
-            //     .take(1)
-            return false
-        }
+        })
+        .take(1)
+        // If use Redux, then dispatch an action to tell UI that `RouteGuard` is done, can hide 
+        // the loading spin right now.
+        .do(() => appStore.dispatch(routingActions.executeRouteGuardDone()))
     }
-    ```
+
+```
+    
+- Async real world example
+```javascript
+shouldRoute(): RouteGuardResultType {
+    appStore.dispatch(routingActions.executeRouteGuard())
+
+    // Get the entire state to check whether the user is already logged in or not
+    const appState: AppState = appStore.getState() as AppState;
+
+    // Already logged in, pass instantly
+    if (appState.auth.loginUser && (!appState.auth.loginError || appState.auth.loginError === '')) {
+        // We can call any BackEnd APIs to rebuild the entire app state that are needed for the 
+        // routed component to be rendered correctly
+        //
+        // Passed
+        return true
+    } else {
+        // Say for instance a user just opened a URL in a new tab, then we can try to load some 
+        // cookie or call some API to load user info. If the API responds successfully, 
+        // then the check has passed. From here we rebuild the entire
+        // app state for the routed component if needed
+        
+        return UserService.loadUserStateFromCookie()
+            .switchMap(loadedUser => loadedUser ? UserService.loadUserList() : Observable.of(false))
+            .do(userList => {
+                // Dispatch an action to let Reducer rebuild the state synchronize
+                if (userList && typeof(userList) === 'object') {
+                    appStore.dispatch(actions.rebuildState(userList))) 
+                }
+            }
+            // Map to boolean result
+            .map(userList => userList ? true : false)
+            .take(1)
+    }
+}
+```
