@@ -45,12 +45,6 @@ You don't need to install `@types/react-route-guard`, as it's written by `TypeSc
     </Router>
     ```
 
- </br></br>
-
- ---
-</br></br>
-
-
 
  - **`RouteGuard`**
 
