@@ -1,21 +1,23 @@
 # React Route Guard
+---
 
 It's based on `react-router-dom`, added the route guard functionality on top of it. It makes it easier to control permissions and roles on a route.
 
-## Install
+## Requirements
+---
 
+- Node <=7.1
+
+## Install
+---
 ```javascript
 yarn add react-route-guard
 ```
 You don't need to install `@types/react-route-guard`, as it's written by `TypeScript` and the npm module already has `index.d.ts` there.
 </br>
 
----
-
-</br>
-
 ## Concept
-
+---
 - **`SecureRoute`**
 
     `<SecureRoute>` works like same way as `<Route`> and therefore you can use it in the exact same way. To enable the `RouteGuard` features pass in extra props (see below). SecureRoute will then perform the following tasks:
@@ -27,7 +29,7 @@ You don't need to install `@types/react-route-guard`, as it's written by `TypeSc
     - `SecureRoute.render()` will only render the route component when route guard has finished, and will render `<Redirect to={this.props.redirectToPathWhenFail | '/'} />` if the route guard check fails
 
 
-### Example
+### Examples
 
     ```xml
     <Router>
