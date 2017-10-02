@@ -11,7 +11,7 @@ Based on `react-router-dom` with route guard functionality on top of it. It make
 ```javascript
 yarn add react-route-guard
 ```
-You don't need to install `@types/react-route-guard`, as it's written by `TypeScript` and the npm module already has `index.d.ts` there.
+You don't need to install `@types/react-route-guard`, as it's written in TypeScript and the npm module already has `index.d.ts` there.
 
 
 ## Concept
