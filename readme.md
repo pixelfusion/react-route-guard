@@ -8,13 +8,14 @@ It's based on `react-router-dom`, added the route guard functionality on top of 
 
 - Node <=7.1
 
+
 ## Install
 ---
 ```javascript
 yarn add react-route-guard
 ```
 You don't need to install `@types/react-route-guard`, as it's written by `TypeScript` and the npm module already has `index.d.ts` there.
-</br>
+
 
 ## Concept
 ---
@@ -29,7 +30,8 @@ You don't need to install `@types/react-route-guard`, as it's written by `TypeSc
     - `SecureRoute.render()` will only render the route component when route guard has finished, and will render `<Redirect to={this.props.redirectToPathWhenFail | '/'} />` if the route guard check fails
 
 
-### Examples
+## Usage
+---
 
     ```javascript
     <Router>
