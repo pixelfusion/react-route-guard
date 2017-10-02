@@ -31,7 +31,7 @@ You don't need to install `@types/react-route-guard`, as it's written by `TypeSc
 
 ### Examples
 
-    ```xml
+    ```javascript
     <Router>
     <Switch>
         <SecureRoute path='/about' component={AboutComponent} />
