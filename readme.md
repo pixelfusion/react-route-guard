@@ -21,7 +21,7 @@ You don't need to install `@types/react-route-guard`, as it's written by `TypeSc
 
     - No DOM component will be created before `<SecureRoute>` has finished its check
 
-    - When the `<SecureRoute>` component has mounted, it will run `RouteGuard.shouldRoute()`. When this function is complete, `SecureRoute` will update the state. `RouteGuard.shouldRoute()` can synchronously return a `boolean` or asynchronous return a `Promise<boolean>` or `Observable<boolean>`
+    - When the `<SecureRoute>` component has mounted, it will run `RouteGuard.shouldRoute()`. When this function is complete, `SecureRoute` will update the state. `RouteGuard.shouldRoute()` can synchronously return a `boolean` or asynchronously return a `Promise<boolean>` or `Observable<boolean>`
 
     - `SecureRoute.render()` will only render the route component when route guard has finished, and will render `<Redirect to={this.props.redirectToPathWhenFail | '/'} />` if the route guard check fails
 
