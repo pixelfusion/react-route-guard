@@ -26,8 +26,6 @@ You don't need to install `@types/react-route-guard`, as it's written by `TypeSc
     - `SecureRoute.render()` will only render the route component when route guard has finished, and will render `<Redirect to={this.props.redirectToPathWhenFail | '/'} />` if the route guard check fails
 
 
-## Usage
-
 ```javascript
     <Router>
     <Switch>
@@ -45,115 +43,118 @@ You don't need to install `@types/react-route-guard`, as it's written by `TypeSc
 
     `RouteGuard` is responsible for telling `<SecureRoute>` whether to enter that route or not. `shouldRoute()` is the key to making that happen, this method must return a boolean value in sync mode or return a `Promise<boolean>` or `Observable<boolean>` in async mode. Before the `RouteGuard` finished, no child components will be rendered, which means no real routing will be executed. `RouteGuard` will stop unauthorized users seeing a route altogether.
  
-    ```javascript
-    export type RouteGuardResultType = boolean | Promise<boolean> | Observable<boolean>
+```javascript
+export type RouteGuardResultType = boolean | Promise<boolean> | Observable<boolean>
 
-    /**
-    * @export
-    * @interface RouteGuard
-    */
-    export interface RouteGuard {
-        shouldRoute: () => RouteGuardResultType
-    }
-    ```
+/**
+* @export
+* @interface RouteGuard
+*/
+export interface RouteGuard {
+    shouldRoute: () => RouteGuardResultType
+}
+```
 
-    Hers are some `shouldRoute()` example for different situation:
-    
-    - Sync example
-    ```javascript
-    shouldRoute(): RouteGuardResultType {
-        // Sync API call here, and the final return value must be `map` to `boolean` if not
-        const resultFromSyncApiCall = true;
-        return resultFromSyncApiCall
-    }
-    ```
-    
-    - Async Promise example
-    ```javascript
-    async shouldRoute(): RouteGuardResultType {
-        // You can use a `Promise` to get
-        // the final boolean result 
-        return new Promise((resolve, reject) => {
-            // Simulate call backend API for checking the authentication and even authorization
-            setTimeout(() => {
-                resolve(true)
-            }, 3000)
-        });
-    }
-    ```
-    
-    - Async Promise example with multiple promises
-    ```javascript
-    async shouldRoute(): RouteGuardResultType {
-        // You can use `Promise.all()` for getting
-        // the final boolean result to based on multiple requirements 
-        
-        const results = await Promise.all([
-            loginUserPromise,
-            getUserPermissionPromise,
-            getUserDashboardPromise
-        ])
-        
-        return results[0].user ? true : false
-    }
-    ```
-    
-    - Async Observable example
-    ```javascript
-    shouldRoute(): RouteGuardResultType {
-        // If use Redux, we can dispatch an action to tell UI that `RouteGuard` is running.
-        // This is useful for displaying loading indicators before the `shouldRoute` is complete
-        appStore.dispatch(routingActions.executeRouteGuard())
-    
-        // Simulate a call to an API to grab the user and permissions
-        return Observable.timer(1000)
-            .map(n => {
-                // When API call done, we need to `map` to `boolean` if not
-                return true
-            })
-            .take(1)
-            // If use Redux, then dispatch an action to tell UI that `RouteGuard` is done, can hide 
-            // the loading spin right now.
-            .do(() => appStore.dispatch(routingActions.executeRouteGuardDone()))
-        }
 
-    ```
-    
-    - Async real life example
-    ```javascript
-    shouldRoute(): RouteGuardResultType {
-        appStore.dispatch(routingActions.executeRouteGuard())
-        
-        // Get the entire state for checking whether the user is already logged in or not
-        const appState: AppState = appStore.getState() as AppState;
+## Usage
 
-        // Already logged in, pass instantly
-        if (appState.auth.loginUser && (!appState.auth.loginError || appState.auth.loginError === '')) {
-            //
-            // At here, we can call any BackEnd APIs to rebuild the entire App State which need for the 
-            // routed component to be rendered correctly !!!
-            //
-            // Passed
+Here are some `shouldRoute()` example for different situation:
+    
+- Sync example
+```javascript
+shouldRoute(): RouteGuardResultType {
+    // Sync API call here, and the final return value must be `map` to `boolean` if not
+    const resultFromSyncApiCall = true;
+    return resultFromSyncApiCall
+}
+```
+    
+- Async Promise example
+```javascript
+async shouldRoute(): RouteGuardResultType {
+    // You can use a `Promise` to get
+    // the final boolean result 
+    return new Promise((resolve, reject) => {
+        // Simulate call backend API for checking the authentication and even authorization
+        setTimeout(() => {
+            resolve(true)
+        }, 3000)
+    });
+}
+```
+    
+- Async Promise example with multiple promises
+```javascript
+async shouldRoute(): RouteGuardResultType {
+    // You can use `Promise.all()` for getting
+    // the final boolean result to based on multiple requirements 
+
+    const results = await Promise.all([
+        loginUserPromise,
+        getUserPermissionPromise,
+        getUserDashboardPromise
+    ])
+
+    return results[0].user ? true : false
+}
+```
+    
+- Async Observable example
+```javascript
+shouldRoute(): RouteGuardResultType {
+    // If use Redux, we can dispatch an action to tell UI that `RouteGuard` is running.
+    // This is useful for displaying loading indicators before the `shouldRoute` is complete
+    appStore.dispatch(routingActions.executeRouteGuard())
+
+    // Simulate a call to an API to grab the user and permissions
+    return Observable.timer(1000)
+        .map(n => {
+            // When API call done, we need to `map` to `boolean` if not
             return true
-        } else {
-            //
-            // Say for instance a user just opened a URL in a new tab, then we can try to load some 
-            // cookie or call some API to load user info. If the API responds successfully, 
-            // then the check has passed. From here we rebuild the entire
-            // app state for the routed component if needed
-            //
-            // return Service.loadUserStateFromCookie()
-            //     .switchMap(loadedUser => loadedUser ? YYYY-Service.loadUserList() : Observable.of(false))
-            //     .do(userList => {
-            //         // Dispatch an action to let Reducer rebuild the state synchronize
-            //         if (userList && typeof(userList) === 'object') {
-            //             appStore.dispatch(zzzz-actions.rebuildState(userList))) 
-            //         }
-            //     }
-            //     // Map to boolean result
-            //     .map(userList => userList ? true : false)
-            //     .take(1)
-            return false
-        }
+        })
+        .take(1)
+        // If use Redux, then dispatch an action to tell UI that `RouteGuard` is done, can hide 
+        // the loading spin right now.
+        .do(() => appStore.dispatch(routingActions.executeRouteGuardDone()))
     }
-    ```
+
+```
+    
+- Async real life example
+```javascript
+shouldRoute(): RouteGuardResultType {
+    appStore.dispatch(routingActions.executeRouteGuard())
+
+    // Get the entire state for checking whether the user is already logged in or not
+    const appState: AppState = appStore.getState() as AppState;
+
+    // Already logged in, pass instantly
+    if (appState.auth.loginUser && (!appState.auth.loginError || appState.auth.loginError === '')) {
+        //
+        // At here, we can call any BackEnd APIs to rebuild the entire App State which need for the 
+        // routed component to be rendered correctly !!!
+        //
+        // Passed
+        return true
+    } else {
+        //
+        // Say for instance a user just opened a URL in a new tab, then we can try to load some 
+        // cookie or call some API to load user info. If the API responds successfully, 
+        // then the check has passed. From here we rebuild the entire
+        // app state for the routed component if needed
+        //
+        // return Service.loadUserStateFromCookie()
+        //     .switchMap(loadedUser => loadedUser ? YYYY-Service.loadUserList() : Observable.of(false))
+        //     .do(userList => {
+        //         // Dispatch an action to let Reducer rebuild the state synchronize
+        //         if (userList && typeof(userList) === 'object') {
+        //             appStore.dispatch(zzzz-actions.rebuildState(userList))) 
+        //         }
+        //     }
+        //     // Map to boolean result
+        //     .map(userList => userList ? true : false)
+        //     .take(1)
+        return false
+    }
+}
+```
