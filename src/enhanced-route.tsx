@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Route, RouteProps, Redirect } from 'react-router-dom'
+import { Route, RouteProps, Redirect, RouteComponentProps } from 'react-router-dom'
 import { Observable } from 'rxjs'
 
 /**
@@ -44,6 +44,7 @@ export interface SecureRouteProps extends RouteProps {
     routeGuard?: RouteGuard
     redirectToPathWhenFail?: string
     enableDebug?: boolean
+    componentWhenFail?: React.ComponentType<RouteComponentProps<any> | {}>
 }
 
 export interface SecureRouteState {
@@ -109,6 +110,7 @@ export class SecureRoute extends React.Component<SecureRouteProps, SecureRouteSt
 
         const redirectPath = this.props.redirectToPathWhenFail ? this.props.redirectToPathWhenFail : '/'
         const failRedirect = <Redirect to={redirectPath} />
+        const failComponentRoute = this.props.componentWhenFail ? <Route path={this.props.path} component={this.props.componentWhenFail} /> : null
 
         if (this.state.routeGuardFinished) {
             if (this.props.enableDebug) {
@@ -124,7 +126,12 @@ export class SecureRoute extends React.Component<SecureRouteProps, SecureRouteSt
                 debugLogger(className, `render`, debugMsg, debugTheme)
             }
 
-            return this.state.routeGuardResult ? successRoute : failRedirect
+            if (this.state.routeGuardResult) {
+                return successRoute
+            } else {
+                // `componentWhenFail` got higher priority than `redirectToPathWhenFail`
+                return this.props.componentWhenFail ? failComponentRoute : failRedirect
+            }
         } else {
             return null
         }
